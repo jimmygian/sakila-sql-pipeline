@@ -1,0 +1,48 @@
+name: sakila-sql-compose
+services:
+  db:
+    image: mysql:8.0
+    container_name: sakila-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: sakila
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app_password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ppassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 25
+  notebook:
+    image: jupyter/scipy-notebook:latest
+    container_name: sakila-notebook
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./requirements.txt:/home/jovyan/requirements.txt
+    command: >
+      bash -lc "pip install -r requirements.txt &&
+      start-notebook.py --NotebookApp.token='' --NotebookApp.password=''"
+    depends_on:
+      db:
+        condition: service_healthy
+  metabase:
+    image: metabase/metabase:latest
+    container_name: sakila-metabase
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - metabase_data:/metabase.db
+volumes:
+  db_data:
+  metabase_data:
