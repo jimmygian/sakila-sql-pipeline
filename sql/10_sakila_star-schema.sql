@@ -6,6 +6,14 @@ USE sakila_star;
 
 
 --
+-- Grant permissions to the 'app' user defined in docker-compose
+--
+
+-- We use '%' to allow connection from any host (required for docker networking)
+GRANT ALL PRIVILEGES ON sakila_star.* TO 'app'@'%';
+FLUSH PRIVILEGES;
+
+--
 -- ETL watermark table (one watermark for this pipeline)
 --
 
