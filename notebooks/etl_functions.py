@@ -68,7 +68,15 @@ def _initialise_etl_state(etl_state_list=None, ts='1970-01-01 00:00:00'):
     print("\n\n >> INITIALISING ETL STATE ...\n")
 
     if not etl_state_list:
-        etl_state_list = ["fact_rental", "dim_film", "dim_customer", "dim_staff", "dim_actor", "bridge_actor", "dim_store"]
+        etl_state_list = [
+            "fact_rental", 
+            "dim_film", 
+            "dim_category", 
+            "dim_customer", 
+            "dim_staff", 
+            "dim_actor", 
+            "bridge_actor", 
+            "dim_store"]
     
     with tgt_engine.connect() as conn:
         update_watermark(etl_state_list, ts, conn)
@@ -124,6 +132,9 @@ def run_incremental_load(pipeline_name, extract_sql, load_sql, src_engine, tgt_e
         print(f"[{pipeline_name}] Extraction Error: {e}")
         return
 
+    # Convert Pandas NaT/NaN to Python None so SQL accepts it as NULL
+    df = df.astype(object).where(pd.notnull(df), None)
+    
     if df.empty:
         print(f"[{pipeline_name}] No new records found.")
         return
