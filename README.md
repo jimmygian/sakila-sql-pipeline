@@ -15,7 +15,9 @@ The executive management team at the DVD store chain Sakila Entertainment seeks 
 * Identify opportunities for operational improvement
 * Make data-driven decisions to optimize business outcomes
 
-This project delivers a comprehensive **end-to-end data engineering solution**. It transforms the legacy, normalized _Sakila rental database_ (OLTP) into a high-performance, denormalized _Star Schema Data Warehouse_ (OLAP), enabling advanced analytics and robust business intelligence.
+This project delivers a comprehensive **end-to-end data engineering solution**. It transforms the legacy, normalized [_Sakila rental database_](https://dev.mysql.com/doc/sakila/en/) (OLTP) into a high-performance, denormalized _Star Schema Data Warehouse_ (OLAP), enabling advanced analytics and robust business intelligence.
+
+![Sakila Overview](./assets/metabase_exec_dashboard_overview.png)
 
 Key features of the solution include:
 - **Containerized pipeline:** All components are packaged with `Docker` for portability and consistency.
@@ -53,7 +55,7 @@ This architecture empowers Sakila Entertainment to unlock the full potential of 
 
 <br>
 
-## Installation & Setup
+## Installation & Usage
 
 ### 1. Prerequisites
 
@@ -77,15 +79,39 @@ Run `docker ps` in the terminal to ensure the following are active:
 - **sakila-notebook (Port 8888)** - The ETL & Analysis Environment
 - **sakila-metabase (Port 3000)** - The BI Dashboard
 
+> They should also have a status of "Up" and "Healthy". If not, try again - it may take a few minutes for the containers to start up fully.
+
 <br>
+
+
+
+
+<br>
+
+### 4. Running the Pipeline
+
+The pipeline is pre-configured to run automatically upon container startup.
 
 By following these steps, you'll have a fully functional data engineering pipeline ready to use.
-- http://localhost:8888 - The ETL & Analysis Environment (Jupyter Notebook)
-- http://localhost:3000 - The BI Dashboard (Metabase)
-- http://localhost:3306 - The Database Host (MySQL Workbench)
+- http://localhost:8888: The ETL & Analysis Environment (Jupyter Notebook)
+    - This is where you can run the pipeline and analyze the data.
+- http://localhost:3306: The Database Host (MySQL Workbench)
+    - You can use this to view and manage the database via MySQL Workbench or CLI:
+    - `docker exec -it sakila-mysql mysql -u app -p` (Password: `app_password`)
+
+- http://localhost:3000: The BI Dashboard (Metabase)
 
 
-<br>
+To use the pipeline, you can access the Jupyter Notebook at http://localhost:8888.
+- Run `notebooks/01_incremental_ETL_pipeline.ipynb` to initialize the `etl_state` table and populate the data of `sakila_star`.
+- Run `notebooks/02_data_analysis.ipynb` to analyze the data and generate insights.
+
+To see the dashboard, you can access it at http://localhost:3000. Create a username/password, and connect to `MySQL` database following the instructions:
+
+
+
+AFter running the notebook, you can access the dashboard at http://localhost:3000 and view the executive overview.
+
 
 ## Project Execution
 
